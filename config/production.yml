@@ -1,0 +1,5 @@
+server:
+  origin: http://hris.com
+
+db:
+  synchronize: false

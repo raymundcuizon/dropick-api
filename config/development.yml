@@ -1,0 +1,8 @@
+db:
+  host: 'localhost'
+  username: 'development'
+  password: 'dev12345'
+  synchronize: true
+
+jwt:
+  secret: 'ZvkYYnyM929FM4NW9_hSis7_x3_9rymsDAx9yuOcc1I_Secret'
