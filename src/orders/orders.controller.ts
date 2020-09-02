@@ -12,7 +12,7 @@ import { UserRoles } from 'src/auth/userrole-enum';
 @Controller(ROUTES.ORDER.BASE)
 @UseGuards(AuthGuard())
 export class OrdersController {
-    private logger = new Logger('TasksController');
+    private logger = new Logger('OrdersController');
     constructor(private orderService: OrdersService) {}
 
     @Post(ROUTES.ORDER.CREATE)
@@ -30,9 +30,11 @@ export class OrdersController {
     }
 
     @Get(ROUTES.ORDER.GET_ORDER)
-    getOrder(@GetUser() user: User): Promise<Order> {
+    getOrder(
+        @Param('id') id: number,
+        @GetUser() user: User): Promise<Order> {
         this.logger.verbose(`getOrder initiate`);
-        return null;
+        return this.orderService.getOrderByid(user, id);
     }
 
     @Patch(ROUTES.ORDER.UPDATE_STATUS)

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { OrderRepository } from './order.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../auth/user.entity';
@@ -7,9 +7,11 @@ import { CreateOrderResponseDto } from './dto/create-order-response.dto';
 import { Order } from './order.entity';
 import { OrderStatus } from './order-status.enum';
 import { PaymentStatus } from './order-payment-status.enum';
+import * as moment from 'moment';
 
 @Injectable()
 export class OrdersService {
+    private logger = new Logger('OrdersService');
     constructor(
         @InjectRepository(OrderRepository)
         private orderRepository: OrderRepository,
@@ -29,13 +31,10 @@ export class OrdersService {
     }
 
     async getOrderByid(
+        user: User,
         id: number,
     ): Promise<Order> {
-        const found = await this.orderRepository.findOne({ where: { id } });
-        if (!found) {
-            throw new NotFoundException(`Order with ID "${id}" not found`);
-        }
-        return found;
+        return await this.orderRepository.getOrderById(user, id);
     }
 
     async claim(
@@ -47,6 +46,7 @@ export class OrdersService {
         }
         order.status = OrderStatus.CLAIMED;
         order.paymentStatus = PaymentStatus.PAID;
+        order.claimedAt = moment().toDate();
         await order.save();
     }
 }

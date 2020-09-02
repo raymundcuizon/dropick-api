@@ -1,6 +1,6 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { Order } from './order.entity';
-import { Logger, InternalServerErrorException } from '@nestjs/common';
+import { Logger, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CreateOrderResponseDto } from './dto/create-order-response.dto';
 import { User } from '../auth/user.entity';
@@ -8,6 +8,7 @@ import { OrderStatus } from './order-status.enum';
 import { uid, suid } from 'rand-token';
 import { amountItem_const } from '../constants/amount-item.json';
 import { UserRoles } from 'src/auth/userrole-enum';
+import { promises } from 'dns';
 
 @EntityRepository(Order)
 export class OrderRepository extends Repository<Order> {
@@ -69,6 +70,20 @@ export class OrderRepository extends Repository<Order> {
             this.logger.error(`Failed to get tasks for user "${user.username}"`, error.stack);
             throw new InternalServerErrorException();
         }
+    }
+
+    async getOrderById(user: User, id: number): Promise<Order> {
+        const query = this.createQueryBuilder('order');
+        query.where('order.id = :id', {id});
+
+        if (user.role === UserRoles.SELLER) {
+            query.andWhere('order.userId = :userId', { userId: user.id });
+        }
+        const found = await query.getOne();
+        if (!found) {
+            throw new NotFoundException(`Order with ID "${id}" not found`);
+        }
+        return found;
     }
 
     private amountMatching(itemAmount: number): number {

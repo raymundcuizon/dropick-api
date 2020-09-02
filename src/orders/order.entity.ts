@@ -50,5 +50,5 @@ export class Order extends BaseEntity {
     updatedAt: Date;
 
     @Column({ type: 'timestamp', nullable: true })
-    claimedAt: Timestamp;
+    claimedAt: Date;
 }
