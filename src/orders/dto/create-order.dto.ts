@@ -1,11 +1,13 @@
 import { PaymentStatus } from '../order-payment-status.enum';
+import { MaxLength } from 'class-validator';
 
 export class CreateOrderDto {
-    orderId: string;
     buyerName: string;
-    amount: number;
+
+    @MaxLength(4)
+    amountOfItem: number;
+
     paymentStatus?: PaymentStatus;
-    status?: string;
+
     description: string;
-    claimedAt?: string;
 }

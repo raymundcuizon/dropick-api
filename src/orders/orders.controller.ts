@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Logger, Get, Post, Patch, Body } from '@nestjs/common';
+import { Controller, UseGuards, Logger, Get, Post, Patch, Body, Param, ParseIntPipe, UnauthorizedException } from '@nestjs/common';
 import { ROUTES } from '../constants/constants.json';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/auth/user.entity';
@@ -6,6 +6,8 @@ import { GetUser } from 'src/auth/get-user.decorator';
 import { Order } from './order.entity';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { CreateOrderResponseDto } from './dto/create-order-response.dto';
+import { UserRoles } from 'src/auth/userrole-enum';
 
 @Controller(ROUTES.ORDER.BASE)
 @UseGuards(AuthGuard())
@@ -16,7 +18,7 @@ export class OrdersController {
     @Post(ROUTES.ORDER.CREATE)
     create(
         @Body() createOrderDto: CreateOrderDto,
-        @GetUser() user: User): Promise<void> {
+        @GetUser() user: User): Promise<CreateOrderResponseDto> {
         this.logger.verbose(`create initiate`);
         return this.orderService.createOrder(createOrderDto, user);
     }
@@ -24,7 +26,7 @@ export class OrdersController {
     @Get(ROUTES.ORDER.GET_ORDERS)
     getOrders(@GetUser() user: User): Promise<Order[]> {
         this.logger.verbose(`getOrders initiate`);
-        return null;
+        return this.orderService.getOrders(user);
     }
 
     @Get(ROUTES.ORDER.GET_ORDER)
@@ -40,9 +42,15 @@ export class OrdersController {
     }
 
     @Patch(ROUTES.ORDER.CLAIM)
-    claim(@GetUser() user: User): Promise<void> {
+    claim(
+        @Param('orderId') orderId: string,
+        @GetUser() user: User): Promise<void> {
         this.logger.verbose(`claim initiate`);
-        return null;
+        if (user.role === UserRoles.ADMIN || user.role === UserRoles.STAFF) {
+            return this.orderService.claim(orderId);
+        }
+
+        throw new UnauthorizedException();
     }
 
     @Patch(ROUTES.ORDER.UPDATE)

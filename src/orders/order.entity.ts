@@ -15,7 +15,10 @@ export class Order extends BaseEntity {
     buyerName: string;
 
     @Column('decimal', { precision: 10, scale: 2 })
-    amount: number;
+    amountOfItem: number;
+
+    @Column('decimal', { precision: 10, scale: 2 })
+    amountForBuyer: number;
 
     @Column({
         type: 'enum',
