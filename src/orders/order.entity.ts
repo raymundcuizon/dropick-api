@@ -34,7 +34,7 @@ export class Order extends BaseEntity {
       })
     status: OrderStatus;
 
-    @Column()
+    @Column('text')
     description: string;
 
     @ManyToOne(type => User, user => user.orders, { eager: false })

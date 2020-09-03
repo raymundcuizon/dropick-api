@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger, InternalServerErrorException } from '@nestjs/common';
 import { OrderRepository } from './order.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../auth/user.entity';
@@ -35,6 +35,34 @@ export class OrdersService {
         id: number,
     ): Promise<Order> {
         return await this.orderRepository.getOrderById(user, id);
+    }
+
+    async updateOrder(
+        user: User,
+        id: number,
+        createOrderDto: CreateOrderDto,
+    ): Promise<Order> {
+
+        try {
+            const { amountOfItem, description, paymentStatus, buyerName } = createOrderDto;
+            const order = await this.orderRepository.getOrderById(user, id);
+
+            const amountChangesCheck = (amountOfItem !== order.amountOfItem)
+                ? this.orderRepository.amountMatching(amountOfItem)
+                : order.amountForBuyer;
+
+            order.amountOfItem = amountOfItem;
+            order.amountForBuyer = amountChangesCheck;
+            order.buyerName = buyerName;
+            order.description = description;
+            order.paymentStatus = paymentStatus;
+            await order.save();
+
+            return order;
+        } catch (error) {
+            this.logger.error(`updateOrder: failed to update`);
+            throw new InternalServerErrorException();
+        }
     }
 
     async claim(

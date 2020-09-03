@@ -86,7 +86,7 @@ export class OrderRepository extends Repository<Order> {
         return found;
     }
 
-    private amountMatching(itemAmount: number): number {
+    public amountMatching(itemAmount: number): number {
         let result: number;
         amountItem_const.forEach((_x) => {
             if ((itemAmount >= _x.from) && itemAmount <= _x.to) {

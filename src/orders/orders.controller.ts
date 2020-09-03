@@ -56,8 +56,11 @@ export class OrdersController {
     }
 
     @Patch(ROUTES.ORDER.UPDATE)
-    update(@GetUser() user: User): Promise<Order> {
+    update(
+        @Param('id') id: number,
+        @Body() createOrderDto: CreateOrderDto,
+        @GetUser() user: User): Promise<Order> {
         this.logger.verbose(`update initiate`);
-        return null;
+        return this.orderService.updateOrder(user, id, createOrderDto);
     }
 }

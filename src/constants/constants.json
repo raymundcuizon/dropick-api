@@ -9,7 +9,7 @@
         "ORDER": {
             "BASE": "/order",
             "CREATE": "",
-            "UPDATE": "",
+            "UPDATE": "/:id",
             "GET_ORDERS": "/all",
             "GET_ORDER": "/:id",
             "UPDATE_STATUS": "/:id/update-status",
