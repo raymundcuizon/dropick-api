@@ -8,7 +8,9 @@ import { OrderStatus } from './order-status.enum';
 import { uid, suid } from 'rand-token';
 import { amountItem_const } from '../constants/amount-item.json';
 import { UserRoles } from 'src/auth/userrole-enum';
-import { promises } from 'dns';
+import {paginate, Pagination, IPaginationOptions} from 'nestjs-typeorm-paginate';
+import { GetOrdersFilterDTO } from './dto/getOrdersFilter.dto';
+import { ROUTES } from '../constants/constants.json';
 
 @EntityRepository(Order)
 export class OrderRepository extends Repository<Order> {
@@ -57,15 +59,25 @@ export class OrderRepository extends Repository<Order> {
 
     async getOrders(
         user: User,
-    ): Promise<Order[]> {
+        getOrdersFilterDTO: GetOrdersFilterDTO,
+    ): Promise<Pagination<Order>> {
+
+        const { page, limit } = getOrdersFilterDTO;
+
+        const checkPage =  (!page) ? 1 : page;
+
         const query = this.createQueryBuilder('order');
         if (user.role === UserRoles.SELLER) {
             query.where('order.userId = :userId', { userId: user.id });
         }
+        const options = {
+            page: checkPage,
+            limit,
+            route: ROUTES.ORDER.BASE +  ROUTES.ORDER.GET_ORDERS,
+        };
 
         try {
-            const orders = await query.getMany();
-            return orders;
+            return paginate<Order>(query, options);
         } catch (error) {
             this.logger.error(`Failed to get tasks for user "${user.username}"`, error.stack);
             throw new InternalServerErrorException();

@@ -1,13 +1,19 @@
-import { Controller, Post, Body, ValidationPipe } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, Get, Query, Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { AuthService } from './auth.service';
 import { ROUTES } from '../constants/constants.json';
 import { SignoutDto } from './dto/signoutDto';
 import { GetUser } from './get-user.decorator';
 import { User } from './user.entity';
+import { GetUserssFilterDTO } from './dto/getUsersFilter.dto';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { UserRoles } from './userrole-enum';
+import { AuthGuard } from '@nestjs/passport';
+import { GetUsersResponseDTO } from './dto/getUsersResponse.dto';
 
 @Controller(ROUTES.AUTH.BASE)
 export class AuthController {
+  private logger = new Logger('AuthController');
   constructor(
     private authService: AuthService,
   ) {}
@@ -25,6 +31,18 @@ export class AuthController {
     return this.authService.signIn(authCredentialsDto);
   }
 
+  @UseGuards(AuthGuard())
+  @Get(ROUTES.AUTH.USERS)
+  getUsers(
+      @Query(ValidationPipe) getUserssFilterDTO: GetUserssFilterDTO,
+      @GetUser() user: User): Promise<Pagination<GetUsersResponseDTO>> {
+      this.logger.verbose(`getUsers initiate`);
+      if (user.role === UserRoles.ADMIN || user.role === UserRoles.STAFF) {
+        return this.authService.getUsers(getUserssFilterDTO);
+      }
+
+      throw new UnauthorizedException();
+  }
   @Post(ROUTES.AUTH.SIGNOUT)
   signOut(@Body() signoutDto: SignoutDto) {
     return this.authService.signOut(signoutDto.refreshToken);

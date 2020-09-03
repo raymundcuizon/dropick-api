@@ -8,6 +8,8 @@ import { Order } from './order.entity';
 import { OrderStatus } from './order-status.enum';
 import { PaymentStatus } from './order-payment-status.enum';
 import * as moment from 'moment';
+import {Pagination} from 'nestjs-typeorm-paginate';
+import { GetOrdersFilterDTO } from './dto/getOrdersFilter.dto';
 
 @Injectable()
 export class OrdersService {
@@ -26,8 +28,9 @@ export class OrdersService {
 
     async getOrders(
         user: User,
-    ): Promise<Order[]> {
-        return this.orderRepository.getOrders(user);
+        getOrdersFilterDTO: GetOrdersFilterDTO,
+    ): Promise<Pagination<Order>> {
+        return this.orderRepository.getOrders(user, getOrdersFilterDTO);
     }
 
     async getOrderByid(

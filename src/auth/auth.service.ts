@@ -5,6 +5,10 @@ import { UserRepository } from './user.repository';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { JwtPayload } from './jwt-payload.interface';
 import { uid, suid } from 'rand-token';
+import { GetUserssFilterDTO } from './dto/getUsersFilter.dto';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { User } from './user.entity';
+import { GetUsersResponseDTO } from './dto/getUsersResponse.dto';
 
 @Injectable()
 export class AuthService {
@@ -33,6 +37,12 @@ export class AuthService {
     this.refreshTokens[refreshToken] = username;
     this.logger.debug(`Generated JWT Token with payload ${JSON.stringify(payload)}`);
     return { accessToken, refreshToken };
+  }
+
+  async getUsers(
+    getOrdersFilterDTO: GetUserssFilterDTO,
+  ): Promise<Pagination<GetUsersResponseDTO>> {
+    return this.userRepository.getUsers(getOrdersFilterDTO);
   }
 
   signOut(refreshToken: string) {

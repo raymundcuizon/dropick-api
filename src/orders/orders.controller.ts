@@ -1,4 +1,15 @@
-import { Controller, UseGuards, Logger, Get, Post, Patch, Body, Param, ParseIntPipe, UnauthorizedException } from '@nestjs/common';
+import { Controller,
+    UseGuards,
+    Logger,
+    Get,
+    Post,
+    Patch,
+    Body,
+    Param,
+    ParseIntPipe,
+    UnauthorizedException,
+    Query,
+    ValidationPipe } from '@nestjs/common';
 import { ROUTES } from '../constants/constants.json';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/auth/user.entity';
@@ -8,6 +19,8 @@ import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CreateOrderResponseDto } from './dto/create-order-response.dto';
 import { UserRoles } from 'src/auth/userrole-enum';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { GetOrdersFilterDTO } from './dto/getOrdersFilter.dto';
 
 @Controller(ROUTES.ORDER.BASE)
 @UseGuards(AuthGuard())
@@ -24,9 +37,11 @@ export class OrdersController {
     }
 
     @Get(ROUTES.ORDER.GET_ORDERS)
-    getOrders(@GetUser() user: User): Promise<Order[]> {
+    getOrders(
+        @Query(ValidationPipe) getOrdersFilterDTO: GetOrdersFilterDTO,
+        @GetUser() user: User): Promise<Pagination<Order>> {
         this.logger.verbose(`getOrders initiate`);
-        return this.orderService.getOrders(user);
+        return this.orderService.getOrders(user, getOrdersFilterDTO);
     }
 
     @Get(ROUTES.ORDER.GET_ORDER)

@@ -4,6 +4,11 @@ import * as bcrypt from 'bcryptjs';
 import { User } from './user.entity';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { uid, suid } from 'rand-token';
+import { ROUTES } from '../constants/constants.json';
+import { GetUserssFilterDTO } from './dto/getUsersFilter.dto';
+import { Pagination, paginate } from 'nestjs-typeorm-paginate';
+import { UserRoles } from './userrole-enum';
+import { GetUsersResponseDTO } from './dto/getUsersResponse.dto';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -59,6 +64,46 @@ export class UserRepository extends Repository<User> {
       return null;
     }
   }
+
+  async getUsers(
+    gtUserssFilterDTO: GetUserssFilterDTO,
+  ): Promise<Pagination<GetUsersResponseDTO>> {
+
+    const { page, limit } = gtUserssFilterDTO;
+
+    const checkPage =  (!page) ? 1 : page;
+
+    const query = this.createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.username',
+        'user.email',
+        'user.firstname',
+        'user.lastname',
+        'user.isActivated',
+        'user.activationCode',
+        'user.address',
+        'user.city',
+        'user.province',
+        'user.mobileNumber',
+        'user.role',
+        'user.createdAt',
+        'user.updatedAt',
+      ]);
+
+    const options = {
+        page: checkPage,
+        limit,
+        route: ROUTES.AUTH.BASE +  ROUTES.AUTH.USERS,
+    };
+
+    try {
+        return paginate<GetUsersResponseDTO>(query, options);
+    } catch (error) {
+        this.logger.error(`Failed to get Users`, error.stack);
+        throw new InternalServerErrorException();
+    }
+}
 
   private async hashPassword(password: string, salt: string): Promise<string> {
     return bcrypt.hash(password, salt);

@@ -4,7 +4,8 @@
             "BASE": "/auth",
             "SIGNIN": "/signin",
             "SIGNUP": "/signup",
-            "SIGNOUT": "/signout"
+            "SIGNOUT": "/signout",
+            "USERS": "/users"
         },
         "ORDER": {
             "BASE": "/order",
