@@ -1,4 +1,4 @@
-import { Controller, Post, Body, ValidationPipe, Get, Query, Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, Get, Query, Logger, UnauthorizedException, UseGuards, Patch, Param, Delete } from '@nestjs/common';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { AuthService } from './auth.service';
 import { ROUTES } from '../constants/constants.json';
@@ -31,6 +31,41 @@ export class AuthController {
     return this.authService.signIn(authCredentialsDto);
   }
 
+  @Post(ROUTES.AUTH.SIGNOUT)
+  signOut(@Body() signoutDto: SignoutDto) {
+    return this.authService.signOut(signoutDto.refreshToken);
+  }
+
+  // Protected Routes
+
+  @UseGuards(AuthGuard())
+  @Patch(ROUTES.AUTH.USER_UPDATE)
+  updateUser(
+    @Param('id') id: number,
+    @Body() authCredentialsDto: AuthCredentialsDto,
+    user: User,
+  ): Promise<void> {
+    return null;
+  }
+
+  @UseGuards(AuthGuard())
+  @Delete(ROUTES.AUTH.USER_DELETE)
+  deleteUser(
+    @Param('id') id: number,
+    user: User,
+  ): Promise<void> {
+    return null;
+  }
+
+  @UseGuards(AuthGuard())
+  @Delete(ROUTES.AUTH.GET_USER)
+  getUser(
+    @Param('id') id: number,
+    user: User,
+  ): Promise<void> {
+    return null;
+  }
+
   @UseGuards(AuthGuard())
   @Get(ROUTES.AUTH.USERS)
   getUsers(
@@ -43,8 +78,5 @@ export class AuthController {
 
       throw new UnauthorizedException();
   }
-  @Post(ROUTES.AUTH.SIGNOUT)
-  signOut(@Body() signoutDto: SignoutDto) {
-    return this.authService.signOut(signoutDto.refreshToken);
-  }
+
 }

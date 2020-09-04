@@ -103,7 +103,7 @@ export class UserRepository extends Repository<User> {
         this.logger.error(`Failed to get Users`, error.stack);
         throw new InternalServerErrorException();
     }
-}
+ }
 
   private async hashPassword(password: string, salt: string): Promise<string> {
     return bcrypt.hash(password, salt);

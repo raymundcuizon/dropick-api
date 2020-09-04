@@ -5,7 +5,13 @@
             "SIGNIN": "/signin",
             "SIGNUP": "/signup",
             "SIGNOUT": "/signout",
-            "USERS": "/users"
+            "USERS": "/users",
+            "GET_USER": "/user/:id",
+            "USER_UPDATE": "/user/:id/update",
+            "USER_DELETE": "/user/:id/delete",
+            "CHANGE_PASSWORD": "/user/:id/change-password",
+            "ACTIVATE_ACCOUNT": "/user/:activationKey/activate-account",
+            "FORGOT_PASSWORD": "/user/:email/forgot-password"
         },
         "ORDER": {
             "BASE": "/order",
