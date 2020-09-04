@@ -10,6 +10,8 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 import { UserRoles } from './userrole-enum';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUsersResponseDTO } from './dto/getUsersResponse.dto';
+import { ApiCreatedResponse, ApiOkResponse, ApiUnauthorizedResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { SigninUserDTO } from './dto/signinUser.dto';
 
 @Controller(ROUTES.AUTH.BASE)
 export class AuthController {
@@ -19,27 +21,44 @@ export class AuthController {
   ) {}
 
   @Post(ROUTES.AUTH.SIGNUP)
+  @ApiCreatedResponse({
+    description: 'user registration',
+  })
+  @ApiBody({type: AuthCredentialsDto})
   signUp(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<void> {
     return this.authService.signUp(authCredentialsDto);
   }
 
   @Post(ROUTES.AUTH.SIGNIN)
-  signIn(@Body() authCredentialsDto: AuthCredentialsDto): Promise<{
+  @ApiOkResponse({
+    description: 'User login',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Invalid credential',
+  })
+  @ApiBody({type: SigninUserDTO})
+  signIn(@Body() signinUserDTO: SigninUserDTO): Promise<{
     accessToken: string,
     refreshToken: string,
    }> {
-    return this.authService.signIn(authCredentialsDto);
+    return this.authService.signIn(signinUserDTO);
   }
 
+  // Protected Routes
   @Post(ROUTES.AUTH.SIGNOUT)
+  @ApiOkResponse({
+    description: 'User logged out',
+  })
+  @ApiBody({type: SignoutDto})
+  @ApiBearerAuth()
   signOut(@Body() signoutDto: SignoutDto) {
     return this.authService.signOut(signoutDto.refreshToken);
   }
 
-  // Protected Routes
-
   @UseGuards(AuthGuard())
+  @ApiBearerAuth()
   @Patch(ROUTES.AUTH.USER_UPDATE)
+  @ApiBody({type: SignoutDto})
   updateUser(
     @Param('id') id: number,
     @Body() authCredentialsDto: AuthCredentialsDto,
@@ -49,6 +68,8 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  @ApiBody({type: SignoutDto})
   @Delete(ROUTES.AUTH.USER_DELETE)
   deleteUser(
     @Param('id') id: number,
@@ -58,6 +79,8 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  @ApiBody({type: SignoutDto})
   @Delete(ROUTES.AUTH.GET_USER)
   getUser(
     @Param('id') id: number,
@@ -67,6 +90,8 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  @ApiBody({type: SignoutDto})
   @Get(ROUTES.AUTH.USERS)
   getUsers(
       @Query(ValidationPipe) getUserssFilterDTO: GetUserssFilterDTO,

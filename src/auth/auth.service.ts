@@ -9,6 +9,7 @@ import { GetUserssFilterDTO } from './dto/getUsersFilter.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { User } from './user.entity';
 import { GetUsersResponseDTO } from './dto/getUsersResponse.dto';
+import { SigninUserDTO } from './dto/signinUser.dto';
 
 @Injectable()
 export class AuthService {
@@ -24,8 +25,8 @@ export class AuthService {
     return this.userRepository.signUp(authCredentialsDto);
   }
 
-  async signIn(authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string, refreshToken: string }> {
-    const username = await this.userRepository.validateUserPassword(authCredentialsDto);
+  async signIn(signinUserDTO: SigninUserDTO): Promise<{ accessToken: string, refreshToken: string }> {
+    const username = await this.userRepository.validateUserPassword(signinUserDTO);
 
     if (!username) {
       throw new UnauthorizedException('Invalid credentials');

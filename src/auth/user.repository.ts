@@ -9,6 +9,7 @@ import { GetUserssFilterDTO } from './dto/getUsersFilter.dto';
 import { Pagination, paginate } from 'nestjs-typeorm-paginate';
 import { UserRoles } from './userrole-enum';
 import { GetUsersResponseDTO } from './dto/getUsersResponse.dto';
+import { SigninUserDTO } from './dto/signinUser.dto';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -54,8 +55,8 @@ export class UserRepository extends Repository<User> {
     }
   }
 
-  async validateUserPassword(authCredentialsDto: AuthCredentialsDto): Promise<string> {
-    const { username, password } = authCredentialsDto;
+  async validateUserPassword(signinUserDTO: SigninUserDTO): Promise<string> {
+    const { username, password } = signinUserDTO;
     const user = await this.findOne({ username });
 
     if (user && await user.validatePassword(password)) {

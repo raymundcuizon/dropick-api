@@ -21,14 +21,18 @@ import { CreateOrderResponseDto } from './dto/create-order-response.dto';
 import { UserRoles } from 'src/auth/userrole-enum';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { GetOrdersFilterDTO } from './dto/getOrdersFilter.dto';
+import { ApiBearerAuth, ApiUnauthorizedResponse, ApiBody, ApiOkResponse } from '@nestjs/swagger';
 
 @Controller(ROUTES.ORDER.BASE)
 @UseGuards(AuthGuard())
+@ApiUnauthorizedResponse()
+@ApiBearerAuth()
 export class OrdersController {
     private logger = new Logger('OrdersController');
     constructor(private orderService: OrdersService) {}
 
     @Post(ROUTES.ORDER.CREATE)
+    @ApiBody({ type: CreateOrderDto })
     create(
         @Body() createOrderDto: CreateOrderDto,
         @GetUser() user: User): Promise<CreateOrderResponseDto> {
@@ -37,6 +41,7 @@ export class OrdersController {
     }
 
     @Get(ROUTES.ORDER.GET_ORDERS)
+    @ApiOkResponse({ description: 'Get all orders' })
     getOrders(
         @Query(ValidationPipe) getOrdersFilterDTO: GetOrdersFilterDTO,
         @GetUser() user: User): Promise<Pagination<Order>> {
