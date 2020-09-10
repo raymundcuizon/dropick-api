@@ -4,7 +4,7 @@ import { PaymentStatus } from './order-payment-status.enum';
 import { OrderStatus } from './order-status.enum';
 
 @Entity()
-export class Order extends BaseEntity {
+export class OrderLog extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -50,9 +50,6 @@ export class Order extends BaseEntity {
 
     @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date;
-
-    @UpdateDateColumn({ type: 'timestamp' })
-    updatedAt: Date;
 
     @Column({ type: 'timestamp', nullable: true })
     claimedAt: Date;

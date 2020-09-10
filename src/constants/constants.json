@@ -20,7 +20,8 @@
             "GET_ORDERS": "/all",
             "GET_ORDER": "/:id",
             "UPDATE_STATUS": "/:id/update-status",
-            "CLAIM": "/:orderId/claim"
+            "CLAIM": "/:orderId/claim",
+            "RECEIVING": "/receiving"
         }
     }
 }

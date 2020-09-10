@@ -36,7 +36,7 @@ export class OrderRepository extends Repository<Order> {
             order.description = description;
             order.amountForBuyer = this.amountMatching(amountOfItem);
             order.orderId = uid(7);
-            order.status = OrderStatus.UNCLAIMED;
+            order.status = OrderStatus.PROCESSING;
             order.paymentStatus = paymentStatus;
             order.user = user;
 

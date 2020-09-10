@@ -22,6 +22,7 @@ import { UserRoles } from 'src/auth/userrole-enum';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { GetOrdersFilterDTO } from './dto/getOrdersFilter.dto';
 import { ApiBearerAuth, ApiUnauthorizedResponse, ApiBody, ApiOkResponse } from '@nestjs/swagger';
+import { ReceiveOrderDto } from './dto/receive-order.dto';
 
 @Controller(ROUTES.ORDER.BASE)
 @UseGuards(AuthGuard())
@@ -70,6 +71,18 @@ export class OrdersController {
         this.logger.verbose(`claim initiate`);
         if (user.role === UserRoles.ADMIN || user.role === UserRoles.STAFF) {
             return this.orderService.claim(orderId);
+        }
+
+        throw new UnauthorizedException();
+    }
+
+    @Post(ROUTES.ORDER.RECEIVING)
+    receiving(
+        @Body() receiveOrderDto: ReceiveOrderDto,
+        @GetUser() user: User): Promise<void> {
+        this.logger.verbose(`claim initiate`);
+        if (user.role === UserRoles.ADMIN || user.role === UserRoles.STAFF) {
+            return this.orderService.receiveOrder(receiveOrderDto, user);
         }
 
         throw new UnauthorizedException();

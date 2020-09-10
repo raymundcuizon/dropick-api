@@ -5,11 +5,13 @@ import { User } from '../auth/user.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CreateOrderResponseDto } from './dto/create-order-response.dto';
 import { Order } from './order.entity';
+import { OrderLog } from './order-log.entity';
 import { OrderStatus } from './order-status.enum';
 import { PaymentStatus } from './order-payment-status.enum';
 import * as moment from 'moment';
 import {Pagination} from 'nestjs-typeorm-paginate';
 import { GetOrdersFilterDTO } from './dto/getOrdersFilter.dto';
+import { ReceiveOrderDto } from './dto/receive-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -24,6 +26,36 @@ export class OrdersService {
         user: User,
         ): Promise<CreateOrderResponseDto> {
         return this.orderRepository.createOrder(createOrderDto, user);
+    }
+
+    async receiveOrder(
+        receiveOrderDto: ReceiveOrderDto,
+        user: User,
+        ): Promise<void> {
+            const {
+                orderId,
+                note,
+            } = receiveOrderDto;
+
+            const order = await this.orderRepository.findOne({ where: { orderId } });
+            order.note = note;
+
+            await order.save();
+
+            const orderLog = new OrderLog();
+            orderLog.orderId = order.orderId;
+            orderLog.amountOfItem = order.amountOfItem;
+            orderLog.buyerName = order.buyerName;
+            orderLog.description = order.description;
+            orderLog.amountForBuyer = order.amountForBuyer;
+            orderLog.orderId = order.orderId;
+            orderLog.status = OrderStatus.RECEIVED;
+            orderLog.paymentStatus = order.paymentStatus;
+            orderLog.user = user;
+            orderLog.claimedAt = order.claimedAt;
+            orderLog.note = order.note;
+
+            await orderLog.save();
     }
 
     async getOrders(
@@ -79,5 +111,20 @@ export class OrdersService {
         order.paymentStatus = PaymentStatus.PAID;
         order.claimedAt = moment().toDate();
         await order.save();
+
+        const orderLog = new OrderLog();
+        orderLog.orderId = order.orderId;
+        orderLog.amountOfItem = order.amountOfItem;
+        orderLog.buyerName = order.buyerName;
+        orderLog.description = order.description;
+        orderLog.amountForBuyer = order.amountForBuyer;
+        orderLog.orderId = order.orderId;
+        orderLog.status = OrderStatus.CLAIMED;
+        orderLog.paymentStatus = order.paymentStatus;
+        orderLog.userId = order.userId;
+        orderLog.claimedAt = order.claimedAt;
+        orderLog.note = order.note;
+
+        await orderLog.save();
     }
 }
