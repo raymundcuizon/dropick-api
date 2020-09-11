@@ -12,6 +12,7 @@ import * as moment from 'moment';
 import {Pagination} from 'nestjs-typeorm-paginate';
 import { GetOrdersFilterDTO } from './dto/getOrdersFilter.dto';
 import { ReceiveOrderDto } from './dto/receive-order.dto';
+import { OrderResponseDto } from './dto/order-response.dto';
 
 @Injectable()
 export class OrdersService {
@@ -68,7 +69,7 @@ export class OrdersService {
     async getOrderByid(
         user: User,
         id: number,
-    ): Promise<Order> {
+    ): Promise<OrderResponseDto> {
         return await this.orderRepository.getOrderById(user, id);
     }
 
@@ -80,7 +81,7 @@ export class OrdersService {
 
         try {
             const { amountOfItem, description, paymentStatus, buyerName } = createOrderDto;
-            const order = await this.orderRepository.getOrderById(user, id);
+            const { order } = await this.orderRepository.getOrderById(user, id);
 
             const amountChangesCheck = (amountOfItem !== order.amountOfItem)
                 ? this.orderRepository.amountMatching(amountOfItem)

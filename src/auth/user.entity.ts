@@ -1,7 +1,7 @@
 import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, Unique, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { UserRoles } from './userrole-enum';
-import { Order } from 'src/orders/order.entity';
+import { Order } from '../orders/order.entity';
 
 @Entity()
 @Unique(['username', 'email', 'mobileNumber'])

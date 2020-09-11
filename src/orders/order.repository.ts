@@ -1,4 +1,4 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, Repository, EntityManager } from 'typeorm';
 import { Order } from './order.entity';
 import { Logger, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -7,10 +7,12 @@ import { User } from '../auth/user.entity';
 import { OrderStatus } from './order-status.enum';
 import { uid, suid } from 'rand-token';
 import { amountItem_const } from '../constants/amount-item.json';
-import { UserRoles } from 'src/auth/userrole-enum';
+import { UserRoles } from '../auth/userrole-enum';
 import {paginate, Pagination, IPaginationOptions} from 'nestjs-typeorm-paginate';
 import { GetOrdersFilterDTO } from './dto/getOrdersFilter.dto';
 import { ROUTES } from '../constants/constants.json';
+import { OrderResponseDto } from './dto/order-response.dto';
+import { OrderLog } from './order-log.entity';
 
 @EntityRepository(Order)
 export class OrderRepository extends Repository<Order> {
@@ -84,7 +86,7 @@ export class OrderRepository extends Repository<Order> {
         }
     }
 
-    async getOrderById(user: User, id: number): Promise<Order> {
+    async getOrderById(user: User, id: number): Promise<OrderResponseDto> {
         const query = this.createQueryBuilder('order');
         query.where('order.id = :id', {id});
 
@@ -92,10 +94,16 @@ export class OrderRepository extends Repository<Order> {
             query.andWhere('order.userId = :userId', { userId: user.id });
         }
         const found = await query.getOne();
+
         if (!found) {
             throw new NotFoundException(`Order with ID "${id}" not found`);
         }
-        return found;
+
+        const rawData = await this.manager.query(`SELECT * FROM order_log where order_log.orderId = '${found.orderId}'`);
+        return {
+            order: found,
+            orderLog: rawData,
+        };
     }
 
     public amountMatching(itemAmount: number): number {

@@ -12,17 +12,18 @@ import { Controller,
     ValidationPipe } from '@nestjs/common';
 import { ROUTES } from '../constants/constants.json';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from 'src/auth/user.entity';
-import { GetUser } from 'src/auth/get-user.decorator';
+import { User } from '../auth/user.entity';
+import { GetUser } from '../auth/get-user.decorator';
 import { Order } from './order.entity';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CreateOrderResponseDto } from './dto/create-order-response.dto';
-import { UserRoles } from 'src/auth/userrole-enum';
+import { UserRoles } from '../auth/userrole-enum';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { GetOrdersFilterDTO } from './dto/getOrdersFilter.dto';
 import { ApiBearerAuth, ApiUnauthorizedResponse, ApiBody, ApiOkResponse } from '@nestjs/swagger';
 import { ReceiveOrderDto } from './dto/receive-order.dto';
+import { OrderResponseDto } from './dto/order-response.dto';
 
 @Controller(ROUTES.ORDER.BASE)
 @UseGuards(AuthGuard())
@@ -53,7 +54,7 @@ export class OrdersController {
     @Get(ROUTES.ORDER.GET_ORDER)
     getOrder(
         @Param('id') id: number,
-        @GetUser() user: User): Promise<Order> {
+        @GetUser() user: User): Promise<OrderResponseDto> {
         this.logger.verbose(`getOrder initiate`);
         return this.orderService.getOrderByid(user, id);
     }
