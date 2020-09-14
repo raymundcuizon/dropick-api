@@ -6,3 +6,9 @@ db:
 
 jwt:
   secret: 'ZvkYYnyM929FM4NW9_hSis7_x3_9rymsDAx9yuOcc1I_Secret'
+
+
+
+# host: aaso37ymjwy4gb.clubmb3y6ddy.ap-southeast-1.rds.amazonaws.com
+# username: development
+# password: D3vel0p_menT!

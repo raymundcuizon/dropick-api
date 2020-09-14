@@ -10,8 +10,9 @@
             "USER_UPDATE": "/user/:id/update",
             "USER_DELETE": "/user/:id/delete",
             "CHANGE_PASSWORD": "/user/:id/change-password",
-            "ACTIVATE_ACCOUNT": "/user/:activationKey/activate-account",
-            "FORGOT_PASSWORD": "/user/:email/forgot-password"
+            "ACTIVATE_ACCOUNT": "/user/:username/activate-account/:activationKey",
+            "FORGOT_PASSWORD": "/user/:email/forgot-password",
+            "SELLERS_LIST": "/user/sellers-list"
         },
         "ORDER": {
             "BASE": "/order",

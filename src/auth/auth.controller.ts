@@ -5,13 +5,14 @@ import { ROUTES } from '../constants/constants.json';
 import { SignoutDto } from './dto/signoutDto';
 import { GetUser } from './get-user.decorator';
 import { User } from './user.entity';
-import { GetUserssFilterDTO } from './dto/getUsersFilter.dto';
+import { GetUsersFilterDTO } from './dto/getUsersFilter.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { UserRoles } from './userrole-enum';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUsersResponseDTO } from './dto/getUsersResponse.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiUnauthorizedResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { SigninUserDTO } from './dto/signinUser.dto';
+import { SignupResponseDto } from './dto/signup-response.dto';
 
 @Controller(ROUTES.AUTH.BASE)
 export class AuthController {
@@ -25,7 +26,7 @@ export class AuthController {
     description: 'user registration',
   })
   @ApiBody({type: AuthCredentialsDto})
-  signUp(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<void> {
+  signUp(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<SignupResponseDto> {
     return this.authService.signUp(authCredentialsDto);
   }
 
@@ -42,6 +43,17 @@ export class AuthController {
     refreshToken: string,
    }> {
     return this.authService.signIn(signinUserDTO);
+  }
+
+  @Post(ROUTES.AUTH.ACTIVATE_ACCOUNT)
+  @ApiOkResponse({
+    description: 'Successfully activated',
+  })
+  activateUser(
+    @Param('activationKey') activationKey: string,
+    @Param('username') username: string,
+  ): Promise<void> {
+    return this.authService.activateUser(activationKey, username);
   }
 
   // Protected Routes
@@ -94,7 +106,7 @@ export class AuthController {
   @ApiBody({type: SignoutDto})
   @Get(ROUTES.AUTH.USERS)
   getUsers(
-      @Query(ValidationPipe) getUserssFilterDTO: GetUserssFilterDTO,
+      @Query(ValidationPipe) getUserssFilterDTO: GetUsersFilterDTO,
       @GetUser() user: User): Promise<Pagination<GetUsersResponseDTO>> {
       this.logger.verbose(`getUsers initiate`);
       if (user.role === UserRoles.ADMIN || user.role === UserRoles.STAFF) {

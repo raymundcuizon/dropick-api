@@ -6,4 +6,9 @@ export class GetOrdersFilterDTO {
 
     @IsNotEmpty()
     limit: number;
+
+    keyword?: string;
+    type?: string;
+    dateRangeFrom?: string;
+    dateRangeTo?: string;
 }

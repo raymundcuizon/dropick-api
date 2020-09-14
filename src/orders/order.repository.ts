@@ -12,7 +12,6 @@ import {paginate, Pagination, IPaginationOptions} from 'nestjs-typeorm-paginate'
 import { GetOrdersFilterDTO } from './dto/getOrdersFilter.dto';
 import { ROUTES } from '../constants/constants.json';
 import { OrderResponseDto } from './dto/order-response.dto';
-import { OrderLog } from './order-log.entity';
 
 @EntityRepository(Order)
 export class OrderRepository extends Repository<Order> {

@@ -1,9 +1,12 @@
 import { IsNotEmpty, IsNumber } from 'class-validator';
 
-export class GetUserssFilterDTO {
+export class GetUsersFilterDTO {
     // @IsNotEmpty()
     page: number = 1;
 
     @IsNotEmpty()
     limit: number;
+
+    keyword?: string;
+    type?: string;
 }
