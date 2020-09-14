@@ -4,7 +4,7 @@ import { IsNumber } from 'class-validator';
 export class CreatePriceRateDto {
     @ApiProperty()
     @IsNumber()
-    ratefrom: number;
+    rateFrom: number;
 
     @ApiProperty()
     @IsNumber()

@@ -6,14 +6,14 @@ export class SettingPriceRate extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
-    ratefrom: string;
+    @Column('decimal', { precision: 10, scale: 2 })
+    rateFrom: number;
 
-    @Column()
-    rateTo: string;
+    @Column('decimal', { precision: 10, scale: 2 })
+    rateTo: number;
 
-    @Column()
-    rate: string;
+    @Column('decimal', { precision: 10, scale: 2 })
+    rate: number;
 
     @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date;
