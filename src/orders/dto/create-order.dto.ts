@@ -12,9 +12,7 @@ export class CreateOrderDto {
     @ApiProperty()
     buyerName: string;
 
-    @ApiProperty()
     @MaxLength(4)
-
     @ApiProperty()
     amountOfItem: number;
 

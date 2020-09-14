@@ -6,7 +6,6 @@ import { Controller,
     Patch,
     Body,
     Param,
-    ParseIntPipe,
     UnauthorizedException,
     Query,
     ValidationPipe } from '@nestjs/common';

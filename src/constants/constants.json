@@ -23,6 +23,22 @@
             "UPDATE_STATUS": "/:id/update-status",
             "CLAIM": "/:orderId/claim",
             "RECEIVING": "/receiving"
+        },
+        "PRICE_RATE": {
+            "BASE": "/price-rate",
+            "CREATE": "",
+            "UPDATE": "/:id",
+            "DELETE": "/:id",
+            "GET_ALL": "/all",
+            "GET_SINGLE": "/single/:id"
+        },
+        "BRANCH": {
+            "BASE": "/branch",
+            "CREATE": "",
+            "UPDATE": "/:id",
+            "DELETE": "/:id",
+            "GET_ALL": "/all",
+            "GET_SINGLE": "/single/:id"
         }
     }
 }
