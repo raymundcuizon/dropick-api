@@ -71,6 +71,9 @@ export class OrderRepository extends Repository<Order> {
         if (user.role === UserRoles.SELLER) {
             query.where('order.userId = :userId', { userId: user.id });
         }
+
+        query.orderBy('order.createdAt', 'DESC');
+
         const options = {
             page: checkPage,
             limit,
