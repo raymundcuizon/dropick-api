@@ -6,6 +6,7 @@
             "SIGNUP": "/signup",
             "SIGNOUT": "/signout",
             "USERS": "/users",
+            "REFRESH": "/refresh",
             "GET_USER": "/user/:id",
             "USER_UPDATE": "/user/:id/update",
             "USER_DELETE": "/user/:id/delete",

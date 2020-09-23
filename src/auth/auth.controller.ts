@@ -1,4 +1,19 @@
-import { Controller, Post, Body, ValidationPipe, Get, Query, Logger, UnauthorizedException, UseGuards, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  ValidationPipe,
+  Get,
+  Query,
+  Logger,
+  UnauthorizedException,
+  UseGuards,
+  Patch,
+  Param,
+  Delete,
+  BadRequestException,
+  HttpStatus,
+  HttpCode } from '@nestjs/common';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { AuthService } from './auth.service';
 import { ROUTES } from '../constants/constants.json';
@@ -10,9 +25,15 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 import { UserRoles } from './userrole-enum';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUsersResponseDTO } from './dto/getUsersResponse.dto';
-import { ApiCreatedResponse, ApiOkResponse, ApiUnauthorizedResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiBody,
+  ApiBearerAuth,
+  ApiResponse } from '@nestjs/swagger';
 import { SigninUserDTO } from './dto/signinUser.dto';
 import { SignupResponseDto } from './dto/signup-response.dto';
+import { SigninResponseDTO } from './dto/signinResponse.dto';
 
 @Controller(ROUTES.AUTH.BASE)
 export class AuthController {
@@ -31,17 +52,12 @@ export class AuthController {
   }
 
   @Post(ROUTES.AUTH.SIGNIN)
-  @ApiOkResponse({
-    description: 'User login',
-  })
-  @ApiUnauthorizedResponse({
-    description: 'Invalid credential',
-  })
+  @HttpCode(200)
+  @ApiResponse({ status: HttpStatus.OK, type: SigninResponseDTO })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, type: BadRequestException })
   @ApiBody({type: SigninUserDTO})
-  signIn(@Body() signinUserDTO: SigninUserDTO): Promise<{
-    accessToken: string,
-    refreshToken: string,
-   }> {
+  signIn(@Body() signinUserDTO: SigninUserDTO): Promise<SigninResponseDTO> {
     return this.authService.signIn(signinUserDTO);
   }
 
@@ -74,9 +90,20 @@ export class AuthController {
   updateUser(
     @Param('id') id: number,
     @Body() authCredentialsDto: AuthCredentialsDto,
-    user: User,
+    @GetUser() user: User,
   ): Promise<void> {
     return null;
+  }
+
+  @Get(ROUTES.AUTH.REFRESH)
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  @HttpCode(200)
+  @ApiResponse({ status: HttpStatus.OK, type: SigninResponseDTO })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, type: BadRequestException })
+  authRefresh(@GetUser() user: User): Promise<SigninResponseDTO> {
+    return this.authService.authRefresh(user.username);
   }
 
   @UseGuards(AuthGuard())
@@ -85,7 +112,7 @@ export class AuthController {
   @Delete(ROUTES.AUTH.USER_DELETE)
   deleteUser(
     @Param('id') id: number,
-    user: User,
+    @GetUser() user: User,
   ): Promise<void> {
     return null;
   }
@@ -96,7 +123,7 @@ export class AuthController {
   @Delete(ROUTES.AUTH.GET_USER)
   getUser(
     @Param('id') id: number,
-    user: User,
+    @GetUser() user: User,
   ): Promise<void> {
     return null;
   }

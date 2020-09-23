@@ -15,12 +15,7 @@ const jwtConfig = config.get('jwt');
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || jwtConfig.secret,
-      signOptions: {
-        expiresIn: jwtConfig.expiresIn,
-      },
-    }),
+    JwtModule.register({ secret: process.env.JWT_SECRET || jwtConfig.secret }),
     TypeOrmModule.forFeature([UserRepository]),
     TwilioModule.register({
       accountSid: 'ACc7b97db24e1c3320304750efb88c3b7d',

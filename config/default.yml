@@ -7,4 +7,5 @@ db:
   database: 'dropick'
 
 jwt:
-  expiresIn: 30600
+  expiresIn: '1d'
+  expiresInRefesh: '2d'

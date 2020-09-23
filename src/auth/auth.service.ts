@@ -4,14 +4,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { JwtPayload } from './jwt-payload.interface';
-import { uid, suid } from 'rand-token';
 import { GetUsersFilterDTO } from './dto/getUsersFilter.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
-import { User } from './user.entity';
 import { GetUsersResponseDTO } from './dto/getUsersResponse.dto';
 import { SigninUserDTO } from './dto/signinUser.dto';
-import { SendMeSms } from 'src/services/sendMeSms';
 import { SignupResponseDto } from './dto/signup-response.dto';
+import { SigninResponseDTO } from './dto/signinResponse.dto';
+import * as config from 'config';
+const jwtConfig = config.get('jwt');
 
 @Injectable()
 export class AuthService {
@@ -21,7 +21,6 @@ export class AuthService {
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
     private jwtService: JwtService,
-    private readonly sendMeSms: SendMeSms,
   ) {}
 
   async signUp(authCredentialsDto: AuthCredentialsDto): Promise<SignupResponseDto> {
@@ -43,7 +42,7 @@ export class AuthService {
     }
   }
 
-  async signIn(signinUserDTO: SigninUserDTO): Promise<{ accessToken: string, refreshToken: string }> {
+  async signIn(signinUserDTO: SigninUserDTO): Promise<SigninResponseDTO> {
     const username = await this.userRepository.validateUserPassword(signinUserDTO);
 
     if (!username) {
@@ -51,9 +50,23 @@ export class AuthService {
     }
 
     const payload: JwtPayload = { username };
-    const accessToken = await this.jwtService.sign(payload);
-    const refreshToken: string = uid(256);
-    this.refreshTokens[refreshToken] = username;
+    const accessToken = this.jwtService.sign(payload, { expiresIn: jwtConfig.expiresIn });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: jwtConfig.expiresInRefesh });
+    this.logger.debug(`Generated JWT Token with payload ${JSON.stringify(payload)}`);
+    return { accessToken, refreshToken };
+  }
+
+  async authRefresh(username): Promise<SigninResponseDTO> {
+
+    const user = await this.userRepository.findOne({ username });
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const payload: JwtPayload = { username };
+    const accessToken = this.jwtService.sign(payload, { expiresIn: jwtConfig.expiresIn });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: jwtConfig.expiresInRefesh });
     this.logger.debug(`Generated JWT Token with payload ${JSON.stringify(payload)}`);
     return { accessToken, refreshToken };
   }
