@@ -17,7 +17,7 @@ import {
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { AuthService } from './auth.service';
 import { ROUTES } from '../constants/constants.json';
-import { SignoutDto } from './dto/signoutDto';
+import { RefreshDto } from './dto/refreshDto';
 import { GetUser } from './get-user.decorator';
 import { User } from './user.entity';
 import { GetUsersFilterDTO } from './dto/getUsersFilter.dto';
@@ -77,16 +77,16 @@ export class AuthController {
   @ApiOkResponse({
     description: 'User logged out',
   })
-  @ApiBody({type: SignoutDto})
+  @ApiBody({type: RefreshDto})
   @ApiBearerAuth()
-  signOut(@Body() signoutDto: SignoutDto) {
-    return this.authService.signOut(signoutDto.refreshToken);
+  signOut(@Body() refreshDto: RefreshDto) {
+    return this.authService.signOut(refreshDto.refreshToken);
   }
 
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   @Patch(ROUTES.AUTH.USER_UPDATE)
-  @ApiBody({type: SignoutDto})
+  @ApiBody({type: RefreshDto})
   updateUser(
     @Param('id') id: number,
     @Body() authCredentialsDto: AuthCredentialsDto,
@@ -95,20 +95,18 @@ export class AuthController {
     return null;
   }
 
-  @Get(ROUTES.AUTH.REFRESH)
-  @UseGuards(AuthGuard())
-  @ApiBearerAuth()
+  @Post(ROUTES.AUTH.REFRESH)
   @HttpCode(200)
   @ApiResponse({ status: HttpStatus.OK, type: SigninResponseDTO })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, type: BadRequestException })
-  authRefresh(@GetUser() user: User): Promise<SigninResponseDTO> {
-    return this.authService.authRefresh(user.username);
+  authRefresh( @Body() refreshDto: RefreshDto): Promise<SigninResponseDTO> {
+    return this.authService.authRefresh(refreshDto.refreshToken);
   }
 
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
-  @ApiBody({type: SignoutDto})
+  @ApiBody({type: RefreshDto})
   @Delete(ROUTES.AUTH.USER_DELETE)
   deleteUser(
     @Param('id') id: number,
@@ -119,7 +117,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
-  @ApiBody({type: SignoutDto})
+  @ApiBody({type: RefreshDto})
   @Delete(ROUTES.AUTH.GET_USER)
   getUser(
     @Param('id') id: number,
@@ -130,7 +128,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
-  @ApiBody({type: SignoutDto})
+  @ApiBody({type: ''})
   @Get(ROUTES.AUTH.USERS)
   getUsers(
       @Query(ValidationPipe) getUserssFilterDTO: GetUsersFilterDTO,

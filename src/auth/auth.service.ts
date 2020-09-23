@@ -56,15 +56,16 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async authRefresh(username): Promise<SigninResponseDTO> {
+  async authRefresh(refToken: string): Promise<SigninResponseDTO> {
 
-    const user = await this.userRepository.findOne({ username });
+    // const user = await this.userRepository.findOne({ username });
+    const decodeToken: any = this.jwtService.decode(refToken);
 
-    if (!user) {
+    if (!decodeToken.username) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload: JwtPayload = { username };
+    const payload: JwtPayload = { username: decodeToken.username };
     const accessToken = this.jwtService.sign(payload, { expiresIn: jwtConfig.expiresIn });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: jwtConfig.expiresInRefesh });
     this.logger.debug(`Generated JWT Token with payload ${JSON.stringify(payload)}`);
