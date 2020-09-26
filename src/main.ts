@@ -23,14 +23,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
 
-  app.enableCors();
-
-  // if (process.env.NODE_ENV === 'development') {
-  //   app.enableCors();
-  // } else {
-  //   app.enableCors({ origin: serverConfig.origin });
-  //   logger.log(`Accepting requests from origin "${serverConfig.origin}"`);
-  // }
+  if (process.env.NODE_ENV === 'development') {
+    app.enableCors();
+  } else {
+    app.enableCors({ origin: serverConfig.origin });
+    logger.log(`Accepting requests from origin "${serverConfig.origin}"`);
+  }
 
   const port = process.env.PORT || serverConfig.port;
   await app.listen(port);

@@ -8,8 +8,9 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import * as config from 'config';
 import { TwilioModule } from '@lkaric/twilio-nestjs';
-import { SendMeSms } from 'src/services/sendMeSms';
+import { SendMeSms } from '../services/sendMeSms';
 
+const twilioConfig = config.get('twilio');
 const jwtConfig = config.get('jwt');
 
 @Module({
@@ -18,8 +19,8 @@ const jwtConfig = config.get('jwt');
     JwtModule.register({ secret: process.env.JWT_SECRET || jwtConfig.secret }),
     TypeOrmModule.forFeature([UserRepository]),
     TwilioModule.register({
-      accountSid: 'ACc7b97db24e1c3320304750efb88c3b7d',
-      authToken: 'e07b77bf6e89a8bc779fc6aec2ffb548',
+      accountSid: process.env.TWILIO_accountSid || twilioConfig.accountSid,
+      authToken: process.env.TWILIO_authToken || twilioConfig.authToken,
     }),
   ],
   controllers: [AuthController],

@@ -1,5 +1,5 @@
 server:
-  origin: http://hris.com
+  origin: '*'
 
 db:
-  synchronize: false
+  synchronize: true
