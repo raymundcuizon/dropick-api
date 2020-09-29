@@ -12,5 +12,8 @@ import { SettingPriceRateService } from './setting-price-rate.service';
   ],
   controllers: [SettingPriceRateController],
   providers: [SettingPriceRateService],
+  exports: [
+    SettingPriceRateService,
+  ],
 })
 export class SettingPriceRateModule {}
