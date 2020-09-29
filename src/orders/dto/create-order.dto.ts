@@ -20,5 +20,8 @@ export class CreateOrderDto {
     paymentStatus?: PaymentStatus;
 
     @ApiProperty()
+    amountForBuyer?: number;
+
+    @ApiProperty()
     description: string;
 }

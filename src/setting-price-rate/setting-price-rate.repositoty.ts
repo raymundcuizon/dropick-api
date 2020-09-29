@@ -61,6 +61,20 @@ export class SettingPriceRateRepository extends Repository<SettingPriceRate> {
         return this.find();
     }
 
+    async getAmountRateForItem(amount: number): Promise<number> {
+        this.logger.log(`initiate getAmountRateForItem: ${amount}`);
+        const query = this.createQueryBuilder('priceRate');
+        query.where('priceRate.rateFrom <= :amount AND priceRate.rateTo >= :amount', { amount });
+
+        const found = await query.getOne();
+
+        if (found) {
+            return found.rate;
+        }
+        return 0;
+
+    }
+
     async deletePriceRate(): Promise<void> {
         return null;
     }

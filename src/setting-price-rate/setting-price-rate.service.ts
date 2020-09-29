@@ -9,27 +9,31 @@ export class SettingPriceRateService {
     private logger = new Logger('SettingBranchService');
     constructor(
         @InjectRepository(SettingPriceRateRepository)
-        private settingBranchRepository: SettingPriceRateRepository,
+        private settingPriceRateRepository: SettingPriceRateRepository,
       ) {}
 
     async createPriceRate(
         createPriceRateDto: CreatePriceRateDto,
     ): Promise<SettingPriceRate> {
-        return this.settingBranchRepository.createPriceRate(createPriceRateDto);
+        return this.settingPriceRateRepository.createPriceRate(createPriceRateDto);
     }
 
     async updatePriceRate(
         id: number,
         createPriceRateDto: CreatePriceRateDto,
     ): Promise<SettingPriceRate> {
-        return this.settingBranchRepository.updatePriceRate(id, createPriceRateDto);
+        return this.settingPriceRateRepository.updatePriceRate(id, createPriceRateDto);
     }
 
     async getSinglePriceRate(id: number): Promise<SettingPriceRate> {
-        return this.settingBranchRepository.getSinglePriceRate(id);
+        return this.settingPriceRateRepository.getSinglePriceRate(id);
     }
 
     async getAllPriceRate(): Promise<SettingPriceRate[]> {
-        return this.settingBranchRepository.getAllPriceRate();
+        return this.settingPriceRateRepository.getAllPriceRate();
+    }
+
+    async getAmountRateForItem(amount: number): Promise<number> {
+        return this.settingPriceRateRepository.getAmountRateForItem(amount);
     }
 }

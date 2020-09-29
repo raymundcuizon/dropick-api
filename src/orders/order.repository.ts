@@ -28,14 +28,14 @@ export class OrderRepository extends Repository<Order> {
                 buyerName,
                 description,
                 paymentStatus,
+                amountForBuyer,
             } = createOrderDto;
 
             const order = new Order();
-
             order.amountOfItem = amountOfItem;
             order.buyerName = buyerName;
             order.description = description;
-            order.amountForBuyer = this.amountMatching(amountOfItem);
+            order.amountForBuyer = amountForBuyer;
             order.orderId = uid(7);
             order.status = OrderStatus.PROCESSING;
             order.paymentStatus = paymentStatus;

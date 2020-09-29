@@ -13,6 +13,7 @@ import {Pagination} from 'nestjs-typeorm-paginate';
 import { GetOrdersFilterDTO } from './dto/getOrdersFilter.dto';
 import { ReceiveOrderDto } from './dto/receive-order.dto';
 import { OrderResponseDto } from './dto/order-response.dto';
+import { SettingPriceRateService } from '../setting-price-rate/setting-price-rate.service';
 
 @Injectable()
 export class OrdersService {
@@ -20,12 +21,17 @@ export class OrdersService {
     constructor(
         @InjectRepository(OrderRepository)
         private orderRepository: OrderRepository,
+        private readonly settingPriceRateService: SettingPriceRateService,
       ) {}
 
     async createOrder(
         createOrderDto: CreateOrderDto,
         user: User,
         ): Promise<CreateOrderResponseDto> {
+
+        const amountForBuyer = await this.settingPriceRateService.getAmountRateForItem(createOrderDto.amountOfItem);
+        createOrderDto.amountForBuyer = amountForBuyer;
+
         return this.orderRepository.createOrder(createOrderDto, user);
     }
 

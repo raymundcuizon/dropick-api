@@ -31,7 +31,8 @@
             "UPDATE": "/:id",
             "DELETE": "/:id",
             "GET_ALL": "/all",
-            "GET_SINGLE": "/single/:id"
+            "GET_SINGLE": "/single/:id",
+            "CHECK_FOR_PRICE_RATE": "/check-for-price-rate/:amount"
         },
         "BRANCH": {
             "BASE": "/branch",

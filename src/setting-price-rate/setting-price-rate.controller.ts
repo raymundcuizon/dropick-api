@@ -9,11 +9,12 @@ import { SettingPriceRateService } from './setting-price-rate.service';
 @Controller(ROUTES.PRICE_RATE.BASE)
 @UseGuards(AuthGuard())
 @ApiUnauthorizedResponse()
-@ApiBearerAuth()export class SettingPriceRateController {
+@ApiBearerAuth()
+export class SettingPriceRateController {
     private logger = new Logger('SettingPriceRateController');
     constructor(private settingPriceRateService: SettingPriceRateService) {}
 
-    @Post(ROUTES.BRANCH.CREATE)
+    @Post(ROUTES.PRICE_RATE.CREATE)
     @ApiBody({ type: CreatePriceRateDto })
     createPriceRate(
         @Body() createPriceRateDto: CreatePriceRateDto,
@@ -22,7 +23,7 @@ import { SettingPriceRateService } from './setting-price-rate.service';
         return this.settingPriceRateService.createPriceRate(createPriceRateDto);
     }
 
-    @Patch(ROUTES.BRANCH.UPDATE)
+    @Patch(ROUTES.PRICE_RATE.UPDATE)
     @ApiBody({ type: CreatePriceRateDto })
     updatePriceRate(
         @Param('id') id: number,
@@ -33,7 +34,7 @@ import { SettingPriceRateService } from './setting-price-rate.service';
 
     }
 
-    @Get(ROUTES.BRANCH.GET_SINGLE)
+    @Get(ROUTES.PRICE_RATE.GET_SINGLE)
     getSinglePriceRate(
         @Param('id') id: number,
     ): Promise<SettingPriceRate> {
@@ -42,10 +43,19 @@ import { SettingPriceRateService } from './setting-price-rate.service';
 
     }
 
-    @Get(ROUTES.BRANCH.GET_ALL)
+    @Get(ROUTES.PRICE_RATE.GET_ALL)
     getAllPriceRate(): Promise<SettingPriceRate[]> {
         this.logger.verbose(`getAllPriceRate initiate`);
         return this.settingPriceRateService.getAllPriceRate();
+
+    }
+
+    @Get(ROUTES.PRICE_RATE.CHECK_FOR_PRICE_RATE)
+    getAmountRateForItem(
+        @Param('amount') amount: number,
+    ): Promise<number> {
+        this.logger.verbose(`getAllPriceRate initiate`);
+        return this.settingPriceRateService.getAmountRateForItem(amount);
 
     }
 }
